@@ -1,6 +1,6 @@
 
-from .serializer import UserDetailSerializer, TaskSerializer, TaskDataValidationSerializer
-from .models import UserDetail, SingleTodoList
+from .serializer import TodoListSerializer, UserDetailSerializer, TodoListDataValidationSerializer, TaskSerializer, TaskDataValidationSerializer
+from .models import UserDetail, TodoList, SingleTodoList
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
@@ -39,6 +39,55 @@ class UserDetailView(APIView):
             return Response({"status": "User Created", "details": userDetail.data})
         return Response({"error": "registeration failed."})
 
+class TodoListView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    # throttle_classes = [UserRateThrottle]
+
+    def Check_User_Auth(self, id):
+
+        if id == self.request.user.id:
+            return True
+        else:
+            raise exceptions.AuthenticationFailed
+
+    def get(self, request, id=None):
+        if id and self.Check_User_Auth(id):
+            try:
+                queryset = TodoList.objects.filter(user_id=id)
+            except TodoList.DoesNotExist:
+                return Response({'errors': 'This Transaction does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+
+            read_TransactionSerializer = TodoListSerializer(queryset, many=True)
+
+        return Response(read_TransactionSerializer.data)
+
+    def post(self, request):
+
+        validated_request = TodoListDataValidationSerializer(data=request.data)
+
+        if validated_request.is_valid() and self.Check_User_Auth(validated_request.data.get('user_id')):
+            validated_data = validated_request.data
+
+            create_TodoSerializer = TodoListSerializer(data=validated_data)
+            if create_TodoSerializer.is_valid():
+                Todo_object = create_TodoSerializer.save()
+                read_TodoSerializer = TodoListSerializer(Todo_object)
+                return Response({"Todo": read_TodoSerializer.data, "status": "Todo Added successfully"},
+                                status=status.HTTP_201_CREATED)
+            # return False, create_TodoSerializer.errors
+            return Response(data=create_TodoSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class Logout(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        # simply delete the token to force a login
+        request.user.auth_token.delete()
+        return Response(data={"status": "Logout Successful"}, status=status.HTTP_200_OK)
 
 # Api without authentications
 
