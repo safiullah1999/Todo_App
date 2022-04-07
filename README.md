@@ -18,13 +18,13 @@ It is a To-Do Application developed with Django Rest Framework, and MySQL Databa
 * `PATCH /task-update-status/{pk}/`
 * `DELETE /task-delete/{pk}/`
 
-### With Token Authentication
+<!-- ### With Token Authentication
 
 * `POST /add`
 * `GET /task-detail/{pk}/`
 * `POST /register`
 * `POST /login`
-* `GET /getTodoList/{user_id}`
+* `GET /getTodoList/{user_id}` -->
 
 
 ## Get the code
