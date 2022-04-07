@@ -37,6 +37,10 @@ First create virtualenv, then enter the following command.
 
 `pip install -r requirements.txt`
 
+## Install xampp and MySQL
+
+Create a new Database as "todo"
+
 ## Run the commands to generate the database
 `python manage.py makemigrations`
 
