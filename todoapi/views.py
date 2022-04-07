@@ -1,6 +1,8 @@
 
-from .serializer import TaskSerializer, TaskDataValidationSerializer
-from .models import SingleTodoList
+from .serializer import UserDetailSerializer, TaskSerializer, TaskDataValidationSerializer
+from .models import UserDetail, SingleTodoList
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework import exceptions
@@ -9,6 +11,35 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+
+# Create your views here.
+
+class UserDetailView(APIView):
+
+    def post(self, request, format=None):
+        try:
+            if (User.objects.get(email=request.data.get("email"))):
+                userObject = User.objects.get(email=request.data.get("email"))
+                if (userObject.email == request.data.get("email")):
+                    return Response({"error": "Email already registered with another Provider."})
+        except User.DoesNotExist:
+            print("user does not exists")
+
+        user = User.objects.create_user(
+            email=request.data.get("email"),
+            password=request.data.get("password"),
+        )
+        role = request.data.get("role")
+        userDetail = UserDetailSerializer(data={"user": user.id})
+        if userDetail.is_valid():
+            userDetail.save()
+            return Response({"status": "User Created", "details": userDetail.data})
+        return Response({"error": "registeration failed."})
+
+
 # Api without authentications
 
 # api for getting all tasks

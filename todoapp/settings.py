@@ -26,8 +26,8 @@ SECRET_KEY = 'django-insecure-a-hkh-e-z8dzlpq%^%^me1rt)dk0=zrmmz_qlos1u^t+!#mjet
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-# AUTH_USER_MODEL = 'todoapi.User'
-# USE_TZ=True
+AUTH_USER_MODEL = 'todoapi.User'
+USE_TZ=True
 
 
 # Application definition

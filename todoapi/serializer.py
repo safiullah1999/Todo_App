@@ -1,6 +1,10 @@
 from rest_framework import serializers
-from .models import SingleTodoList
+from .models import SingleTodoList, UserDetail
 
+class UserDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserDetail
+        fields = "__all__"
 
 
 class TaskSerializer(serializers.ModelSerializer):
